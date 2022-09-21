@@ -61,6 +61,17 @@ app.post(
   }
 );
 
+//Update a user counter
+app.put("/detect", (req, res) => {
+  const { id } = req.body;
+  for (const user of users) {
+    if (user.id === id) {
+      user.usageCounter++;
+      return res.status(200).json("success");
+    }
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server listenig on http://localhost:${PORT}`);
 });
