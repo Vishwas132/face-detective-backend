@@ -40,6 +40,27 @@ app.post(
   }
 );
 
+// Sign-in a user
+app.post(
+  "/signin",
+  body("email").isEmail(),
+  body("password").isLength({ min: 5 }),
+  (req, res) => {
+    const { email, password } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    for (let user of users) {
+      if (user.email === email && user.password === password) {
+        return res.status(200).json(user);
+      }
+    }
+    res.status(400).json("Wrong email or password");
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`Server listenig on http://localhost:${PORT}`);
 });
