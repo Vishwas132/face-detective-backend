@@ -72,6 +72,19 @@ app.put("/detect", (req, res) => {
   }
 });
 
+// Delete a user profile
+app.delete("/delete", (req, res) => {
+  const id = req.body;
+
+  for (let index = 0; index < users.length; index++) {
+    if (users[index].id === id) {
+      users.splice(index, 1);
+      return res.status(200).json("success");
+    }
+  }
+  res.status(400).json("User id not forund");
+});
+
 app.listen(PORT, () => {
   console.log(`Server listenig on http://localhost:${PORT}`);
 });
