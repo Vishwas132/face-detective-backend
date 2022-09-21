@@ -74,7 +74,7 @@ app.put("/detect", (req, res) => {
 
 // Delete a user profile
 app.delete("/delete", (req, res) => {
-  const id = req.body;
+  const { id } = req.body;
 
   for (let index = 0; index < users.length; index++) {
     if (users[index].id === id) {
