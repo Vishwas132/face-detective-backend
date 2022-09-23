@@ -3,9 +3,11 @@ import { body, validationResult } from "express-validator";
 import cors from "cors";
 import knex from "knex";
 import util from "util";
+import crypto from "crypto";
 import dotenv from "dotenv";
 dotenv.config();
 
+const scrypt = util.promisify(crypto.scrypt);
 
 const db = knex({
   client: "pg",
@@ -28,27 +30,54 @@ app.get("/", (req, res) => {
   res.status(200).json("success");
 });
 
+async function createUser(req, res) {
+  const { name, email, password } = req.body;
+  const salt = crypto.randomBytes(16).toString("hex");
+
+  try {
+    const hashedBuff = await scrypt(password, salt, 64);
+
+    const hashedSaltPassword = hashedBuff.toString("hex");
+
+    db.transaction(async (trx) => {
+      return await trx
+        .insert({
+          email: email,
+          password_hash: hashedSaltPassword,
+        })
+        .into("login")
+        .returning("email")
+        .then(async (loginEmail) => {
+          try {
+            const user = await trx("users").returning("*").insert({
+              name: name,
+              email: loginEmail[0].email,
+              joined: new Date(),
+            });
+            return res.status(200).json(user[0]);
+          } catch (err) {
+            return res.status(400).json("Unable to register");
+          }
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
+    });
+  } catch (err) {
+    console.log("err", err);
+  }
+}
+
 // Register a user
 app.post(
   "/register",
   body("email").isEmail(),
   body("password").isLength({ min: 5 }),
   (req, res) => {
-    const newUser = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    users.push({
-      id: randomUUID(),
-      name: newUser.name,
-      email: newUser.email,
-      password: newUser.password,
-      usageCounter: 0,
-      joined: new Date(),
-    });
-    res.status(200).json(users[users.length - 1]);
+    return createUser(req, res);
   }
 );
 
