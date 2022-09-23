@@ -1,13 +1,25 @@
 import express from "express";
-import { randomUUID } from "crypto";
 import { body, validationResult } from "express-validator";
 import cors from "cors";
+import knex from "knex";
+import util from "util";
+import dotenv from "dotenv";
+dotenv.config();
+
+
+const db = knex({
+  client: "pg",
+  connection: {
+    host: process.env.POSTGRESQL_HOST,
+    user: process.env.POSTGRESQL_USER,
+    password: process.env.POSTGRESQL_PASSWORD,
+    database: process.env.POSTGRESQL_DATABASE,
+  },
+});
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const PORT = 3001;
 
 let users = [];
 
@@ -85,6 +97,8 @@ app.delete("/delete", (req, res) => {
   res.status(400).json("User id not forund");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listenig on http://localhost:${PORT}`);
+app.listen(process.env.PROCESS_PORT, () => {
+  console.log(
+    `Server listenig on http://localhost:${process.env.PROCESS_PORT}`
+  );
 });
