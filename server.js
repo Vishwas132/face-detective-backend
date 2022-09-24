@@ -23,8 +23,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-let users = [];
-
 // Homepage
 app.get("/", (req, res) => {
   res.status(200).json("success");
@@ -134,15 +132,21 @@ app.put("/detect", (req, res) => {
 
 // Delete a user profile
 app.delete("/delete", (req, res) => {
-  const { id } = req.body;
+  const { email } = req.body;
 
-  for (let index = 0; index < users.length; index++) {
-    if (users[index].id === id) {
-      users.splice(index, 1);
-      return res.status(200).json("success");
-    }
-  }
-  res.status(400).json("User id not forund");
+  db("users")
+    .where("email", email)
+    .del()
+    .returning("email")
+    .then((data) => {
+      db("login")
+        .where("email", data[0].email)
+        .del()
+        .returning("email")
+        .then((email) => res.status(200).json(email[0].email))
+        .catch((err) => res.status(400).json(err));
+    })
+    .catch((err) => res.status(400).json(err));
 });
 
 app.listen(process.env.PROCESS_PORT, () => {
