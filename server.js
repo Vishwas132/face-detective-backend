@@ -121,15 +121,15 @@ app.post(
   }
 );
 
-//Update a user counter
+//Update the usage count of a user
 app.put("/detect", (req, res) => {
-  const { id } = req.body;
-  for (const user of users) {
-    if (user.id === id) {
-      user.usageCounter++;
-      return res.status(200).json("success");
-    }
-  }
+  const { email } = req.body;
+  db("users")
+    .where("email", "=", email)
+    .increment("usage_count", 1)
+    .returning("usage_count")
+    .then((count) => res.status(200).json(count[0].usage_count))
+    .catch((err) => res.status(400).json("Unable to increment counter"));
 });
 
 // Delete a user profile
