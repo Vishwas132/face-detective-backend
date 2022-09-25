@@ -4,6 +4,8 @@ import registerRouter from "./routes/register.js";
 import signinRouter from "./routes/signin.js";
 import detectRouter from "./routes/detect.js";
 import deleteRouter from "./routes/delete.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -18,6 +20,8 @@ app.get("/", (req, res) => {
   res.status(200).json("success");
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server listenig on http://localhost:${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(
+    `Server listenig on http://localhost:${process.env.PORT || 3001}`
+  );
 });
