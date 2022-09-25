@@ -64,7 +64,7 @@ router.put("/", (req, res) => {
           apiResult: result.outputs[0].data.regions,
         });
       } else {
-        return res.status(400).json(result.outputs[0].data.regions);
+        return res.status(400).json(Error("API sent undefined"));
       }
     })
     .catch((error) => res.status(400).json(error));
