@@ -23,6 +23,8 @@ router.put("/", (req, res) => {
   const { email, imageUrl } = req.body;
   const { USER_ID, PAT, APP_ID, MODEL_ID, MODEL_VERSION_ID } = process.env;
 
+  console.log("process.env", process.env);
+
   const raw = JSON.stringify({
     user_app_id: {
       user_id: USER_ID,
@@ -57,6 +59,7 @@ router.put("/", (req, res) => {
   )
     .then((response) => response.json())
     .then(async (result) => {
+      console.log("result", result);
       if (result.outputs[0].data.regions) {
         const usageCount = await incrementCount(email);
         return res.status(200).json({
