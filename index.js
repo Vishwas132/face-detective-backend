@@ -18,8 +18,6 @@ app.get("/", (req, res) => {
   res.status(200).json("success");
 });
 
-app.listen(process.env.PROCESS_PORT, () => {
-  console.log(
-    `Server listenig on http://localhost:${process.env.PROCESS_PORT}`
-  );
+app.listen(process.env.PORT, () => {
+  console.log(`Server listenig on http://localhost:${process.env.PORT}`);
 });
