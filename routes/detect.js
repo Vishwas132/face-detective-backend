@@ -1,4 +1,5 @@
 import express from "express";
+import fetch from "node-fetch";
 import db from "../database/database.js";
 import dotenv from "dotenv";
 dotenv.config();
