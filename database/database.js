@@ -4,14 +4,21 @@ dotenv.config();
 
 const db = knex({
   client: "pg",
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL
+  connection:
+    process.env.DATABASE_URL === "smart-brain"
       ? {
-          rejectUnauthorized: false,
+          host: process.env.HOST,
+          user: process.env.USER,
+          password: process.env.PASSWORD,
+          database: process.env.DATABASE_URL,
         }
-      : false,
-  },
+      : {
+          connectionString: process.env.DATABASE_URL,
+          password: process.env.PASSWORD,
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
 });
 
 export default db;

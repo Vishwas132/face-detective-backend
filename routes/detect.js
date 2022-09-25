@@ -59,7 +59,7 @@ router.put("/", (req, res) => {
   )
     .then((response) => response.json())
     .then(async (result) => {
-      console.log("result", result);
+      console.log("result", result.outputs[0].data.regions);
       if (result.outputs[0].data.regions) {
         const usageCount = await incrementCount(email);
         return res.status(200).json({
